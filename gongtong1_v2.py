@@ -69,24 +69,24 @@ def cal_avg_and_dxdydz(corner_data):
         
     return [avg_x, avg_y, avg_z], [xxs, yys, zzs], dxdydz
 
-def save_csv(receiver_type, corner_num, avg_xyz, all_xyz, dxdydz):
+def save_csv(receiver_type, corner_num, avg_xyz, all_xyz, dxdydz , satilongi):
     filename = "output.csv"
     
     with open(filename, 'a', encoding='utf-8') as file:
         for i in range(len(all_xyz[0])):
             dx, dy, dz = dxdydz[i]
             index = i
-            file.write(f"{receiver_type},{corner_num},{index},{all_xyz[0][i]},{all_xyz[1][i]},{all_xyz[2][i]},{dx},{dy},{dz}\n")
+            file.write(f"{receiver_type},{corner_num},{index},{satilongi[i][0]},{satilongi[i][2]},{all_xyz[0][i]},{all_xyz[1][i]},{all_xyz[2][i]},{dx},{dy},{dz}\n")
         index = 'Avg'
-        file.write(f"{receiver_type},{corner_num},{index},{avg_xyz[0]},{avg_xyz[1]},{avg_xyz[2]},0,0,0\n")
-        
+        file.write(f"{receiver_type},{corner_num},{index},{None},{None},{avg_xyz[0]},{avg_xyz[1]},{avg_xyz[2]},0,0,0\n")
+
 if __name__ == "__main__":
     phone_corners = {1: [], 2: [], 3: [], 4: []} #[꼭짓점번호][gngga데이터리스트][내부값]]
     rtk_corners = {1: [], 2: [], 3: [], 4: []}  #[꼭짓점번호][gngga데이터리스트][내부값]]
     corners = 4
     
     with open("output.csv", 'w', encoding='utf-8') as f:
-        f.write("Receiver, CornerNum, Index, X, Y, Z, Dx, Dy, Dz\n")
+        f.write("Receiver, CornerNum, Index, Sati, Longi, X, Y, Z, Dx, Dy, Dz\n")
     
     for i in range(1, 1+corners):
         phone_file_path = f"phone_data/phone{i}.txt"
@@ -96,10 +96,10 @@ if __name__ == "__main__":
         
     for i in range(1, 1+corners):     
         avg_phone_xyz, all_phone_xyz, phone_dxdydz = cal_avg_and_dxdydz(phone_corners[i])
-        save_csv("Phone", i, avg_phone_xyz, all_phone_xyz, phone_dxdydz)
+        save_csv("Phone", i, avg_phone_xyz, all_phone_xyz, phone_dxdydz, phone_corners[i])
     
     for i in range(1, 1+corners):     
         avg_rtk_xyz, all_rtk_xyz, rtk_dxdydz = cal_avg_and_dxdydz(rtk_corners[i])
-        save_csv("RTK", i, avg_rtk_xyz, all_rtk_xyz, rtk_dxdydz)
+        save_csv("RTK", i, avg_rtk_xyz, all_rtk_xyz, rtk_dxdydz, rtk_corners[i])
         
             
