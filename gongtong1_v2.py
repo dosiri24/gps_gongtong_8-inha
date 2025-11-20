@@ -1,6 +1,13 @@
 import math
 
 def get_gps_from_nmea(file_path): # [위도, N or S, 경도, E or W, 고도, 해발고도]
+    def nmea2deg(input):
+        degree = int(float(input)/100)
+        minute = float(input) - degree*100  
+        result = degree + (minute/60)  
+
+        return result
+
     nmedata = []
     with open(file_path, 'r', encoding='utf-8') as file:
         for line in file:
@@ -8,9 +15,11 @@ def get_gps_from_nmea(file_path): # [위도, N or S, 경도, E or W, 고도, 해
             result = []
             
             if temp[0] == '$GNGGA' or temp[0] == '$GPGGA': #gnss or gps
-                result.append(float(temp[2])/100)  #0: 위도 float
+                
+
+                result.append(nmea2deg(temp[2]))  #0: 위도 float
                 result.append(temp[3])  #1: N or S str
-                result.append(float(temp[4])/100)  #2: 경도 float
+                result.append(nmea2deg(temp[4]))  #2: 경도 float
                 result.append(temp[5])  #3: E or W str
                 result.append(float(temp[9]))  #4: 고도 float
                 result.append(float(temp[11])) #5: 해발 고도 float
@@ -25,9 +34,9 @@ def latlong2xyz(lati, longi, alti):
     a = 6378137  #(m) WGS84 장축 반경
     e = 0.0818191908426215 #WGS84 이심률
     b = a * math.sqrt(1 - e**2) #(m) WGS84 단축 반경
-    
-    N = (a**2) / math.sqrt(((a**2)*(math.cos(lati_rad))) + (b**2)* (math.sin(lati_rad))**2) #묘유선 곡률반경
-    
+
+    N = (a**2) / math.sqrt(((a**2)*(math.cos(lati_rad)**2)) + (b**2)* (math.sin(lati_rad)**2)) #묘유선 곡률반경
+
     x = (N + alti) * math.cos(lati_rad) * math.cos(longi_rad)
     y = (N + alti) * math.cos(lati_rad) * math.sin(longi_rad)
     z = (((b**2)/(a**2))*N + alti) * math.sin(lati_rad)
@@ -71,7 +80,6 @@ def save_csv(receiver_type, corner_num, avg_xyz, all_xyz, dxdydz):
         index = 'Avg'
         file.write(f"{receiver_type},{corner_num},{index},{avg_xyz[0]},{avg_xyz[1]},{avg_xyz[2]},0,0,0\n")
         
-    
 if __name__ == "__main__":
     phone_corners = {1: [], 2: [], 3: [], 4: []} #[꼭짓점번호][gngga데이터리스트][내부값]]
     rtk_corners = {1: [], 2: [], 3: [], 4: []}  #[꼭짓점번호][gngga데이터리스트][내부값]]
