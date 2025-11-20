@@ -55,11 +55,7 @@ if __name__ == "__main__":
         lines = data.readlines()
         for line in lines:
             values = line.strip().split(',')
-            if values[2] == 'Avg' and values[0] == 'Phone':
-                phone_avg_datas.append(values)
-            elif values[2] == 'Avg' and values[0] == 'RTK':
-                rtk_avg_datas.append(values)
-            
+
             if values[0] == 'Phone':
               if values[2] == 'Avg':
                   phone_avg_datas.append(values)
@@ -78,7 +74,8 @@ if __name__ == "__main__":
     print("\n==거리 및 면적 계산==")
     phone_distances = process_length(phone_avg_datas)
     for i in range(len(phone_distances)):
-        print(f"Phone 점{i+1}-점{(i+2) if (i+2)<=len(phone_distances) else 1} 거리: {phone_distances[i]:.3f} m")
+        next_point = (i+1) % len(phone_distances) + 1  # 다음 점 번호 계산 (1-2-3-4-1 순환)
+        print(f"Phone 점{i+1}-점{next_point} 거리: {phone_distances[i]:.3f} m")
 
     phone_width = (phone_distances[0] + phone_distances[2]) / 2
     phone_length = (phone_distances[1] + phone_distances[3]) / 2
@@ -87,7 +84,8 @@ if __name__ == "__main__":
 
     rtk_distances = process_length(rtk_avg_datas)
     for i in range(len(rtk_distances)):
-        print(f"RTAP2U 점{i+1}-점{(i+2) if (i+2)<=len(rtk_distances) else 1} 거리: {rtk_distances[i]:.3f} m")
+        next_point = (i+1) % len(rtk_distances) + 1  # 다음 점 번호 계산 (1-2-3-4-1 순환)
+        print(f"RTAP2U 점{i+1}-점{next_point} 거리: {rtk_distances[i]:.3f} m")
     
     rtk_width = (rtk_distances[0] + rtk_distances[2]) / 2
     rtk_length = (rtk_distances[1] + rtk_distances[3]) / 2
